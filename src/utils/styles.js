@@ -1,0 +1,1 @@
+export const TOOLTIP_STYLE = { background: "#3C4660", padding: "1em", boxShadow: "0px 1px 3px black"};
