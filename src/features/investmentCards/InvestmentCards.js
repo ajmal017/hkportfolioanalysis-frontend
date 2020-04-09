@@ -1,63 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+
+import { useFirebase } from "react-redux-firebase";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 
 import { Title } from "../title";
-import { usePaperWidth } from "../../utils/customHooks";
-
+import { fetchStockName } from "../../firebase/crud";
 import InvestmentCard from "./InvestmentCard";
+import { usePaperWidth, useLanguage } from "../../utils/customHooks";
+import { TEXT } from "../../translation";
 
-const data01 = [
-  {
-    stockCode: "0700.HK",
-    stockName: "Tencent",
-    stockOriginalValue: 1000000,
-    stockValuePctChange: 0.223124215
-  },
-  {
-    stockCode: "0005.HK",
-    stockName: "Cheung Kong",
-    stockOriginalValue: 100000,
-    stockValuePctChange: -0.26162461
-  },
-  {
-    stockCode: "0003.HK",
-    stockName: "HK Light",
-    stockOriginalValue: 10000,
-    stockValuePctChange: -0.51231561
-  },
-  {
-    stockCode: "2800.HK",
-    stockName: "ETF",
-    stockOriginalValue: 10000,
-    stockValuePctChange: 0.5125125
-  },
-  {
-    stockCode: "87000.HK",
-    stockName: "Stock with long ass name shitttttt",
-    stockOriginalValue: 10000,
-    stockValuePctChange: 0
-  }
-];
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 }));
 
-export default function InvestmentCards({ stocksObj }) {
+export default function InvestmentCards({ stocks, currentPortfolio }) {
+  const locale = useLanguage();
+  const [portfolioList, setPortfolioList] = useState([]);
   const classes = useStyles();
   const displayWidth = usePaperWidth();
+  const firebase = useFirebase();
+  const language = useLanguage();
+
+  useEffect(() => {
+    async function buildObjs() {
+      const listToLoop = Object.entries(stocks);
+      const data = await Promise.all(
+        listToLoop.map(async ([stockCode, money]) => {
+          const stockCodeHK = `${stockCode}.HK`;
+          const obj = {
+            stockCode: stockCodeHK,
+            stockOriginalValue: money,
+            stockValuePctChange: currentPortfolio[stockCodeHK],
+            stockName: await fetchStockName(firebase, stockCode, language),
+          };
+          return obj;
+        })
+      );
+      setPortfolioList(data);
+    }
+    buildObjs();
+  }, [language]);
 
   return (
     <Paper className={classes.paper} style={{ width: displayWidth }}>
-      <Title>Investment</Title>
+      <Title>{TEXT.stocks[locale]}</Title>
 
-      {data01.map(dataObj => (
+      {portfolioList.map((dataObj) => (
         <InvestmentCard
           stockCode={dataObj.stockCode}
           stockName={dataObj.stockName}

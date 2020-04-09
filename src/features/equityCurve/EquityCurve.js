@@ -7,16 +7,16 @@ import Paper from "@material-ui/core/Paper";
 import { AreaChart, Tooltip, Area, XAxis, YAxis } from "recharts";
 
 import { Title } from "../title";
-import { usePaperWidth } from "../../utils/customHooks";
-
+import { usePaperWidth, useLanguage } from "../../utils/customHooks";
 import PortfolioPerformanceStats from "./PortfolioPerformanceStats";
 import { TOOLTIP_STYLE } from "../../utils/styles";
+import { TEXT } from "../../translation";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 }));
 
 function toPercentage(number) {
@@ -27,13 +27,13 @@ function formatData(obj) {
   return {
     HSI: toPercentage(obj["^HSI"]),
     Portfolio: toPercentage(obj["portfolio"]),
-    date: obj["date"]
+    date: obj["date"],
   };
 }
 
 function minOfArrayObj(arrayObject) {
   let min_ = Infinity;
-  arrayObject.forEach(obj => {
+  arrayObject.forEach((obj) => {
     min_ = Math.min(min_, obj.Portfolio, obj.HSI);
   });
   return min_;
@@ -41,7 +41,7 @@ function minOfArrayObj(arrayObject) {
 
 function maxOfArrayObj(arrayObject) {
   let max_ = -Infinity;
-  arrayObject.forEach(obj => {
+  arrayObject.forEach((obj) => {
     max_ = Math.max(max_, obj.Portfolio, obj.HSI);
   });
   return max_;
@@ -53,7 +53,7 @@ function calculateMaxDrawdown(array) {
   }
   let maxDD = 0;
   let maxNum = -Infinity;
-  array.forEach(num => {
+  array.forEach((num) => {
     maxNum = Math.max(maxNum, num);
     maxDD = Math.min(maxDD, num / maxNum - 1);
   });
@@ -63,11 +63,13 @@ function calculateMaxDrawdown(array) {
 const STROKE_COLOR = "#678DDA";
 
 export default function EquityCurve({ equityCurveObjArray }) {
+  const locale = useLanguage();
+
   const classes = useStyles();
   const displayWidth = usePaperWidth();
 
   const graphWidth = Math.min(displayWidth * 0.9, 350);
-  const data = equityCurveObjArray.map(elem => formatData(elem));
+  const data = equityCurveObjArray.map((elem) => formatData(elem));
   const lastObj = equityCurveObjArray[equityCurveObjArray.length - 1];
 
   const yAxisMin = Math.floor(minOfArrayObj(data) / 5) * 5;
@@ -75,12 +77,12 @@ export default function EquityCurve({ equityCurveObjArray }) {
   let yTicks = [0, yAxisMax, yAxisMin].sort();
 
   const portfolioEquityCurve = equityCurveObjArray.map(
-    obj => obj.portfolio + 1
+    (obj) => obj.portfolio + 1
   );
 
   return (
     <Paper className={classes.paper} style={{ width: displayWidth }}>
-      <Title>Portfolio</Title>
+      <Title>{TEXT.portfolio[locale]}</Title>
       <AreaChart
         width={graphWidth}
         height={250}
@@ -101,7 +103,7 @@ export default function EquityCurve({ equityCurveObjArray }) {
           stroke="#7986a3"
           tick={{ fontSize: 10 }}
         />
-        <Tooltip content={tooltipContent} />
+        <Tooltip content={(props) => tooltipContent(props, locale)} />
         <Area type="monotone" dataKey="HSI" stroke="#6D7693" fill="url()" />
         <Area
           type="monotone"
@@ -121,7 +123,7 @@ export default function EquityCurve({ equityCurveObjArray }) {
   );
 }
 
-function tooltipContent(tooltipProps) {
+function tooltipContent(tooltipProps, locale) {
   const popUpObjList = tooltipProps.payload;
   if (popUpObjList.length > 0) {
     const obj = popUpObjList[0].payload;
@@ -129,10 +131,10 @@ function tooltipContent(tooltipProps) {
       <div style={TOOLTIP_STYLE}>
         <Typography>{obj.date}</Typography>
         <Typography variant="body2" color="textSecondary">
-          Portfolio: {obj.Portfolio}%
+          {`${TEXT.portfolio[locale]}: ${obj.Portfolio}%`}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          HSI: {obj.HSI}%
+          {`${TEXT.hsi[locale]}: ${obj.HSI}%`}
         </Typography>
       </div>
     );

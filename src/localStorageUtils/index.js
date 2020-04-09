@@ -9,12 +9,12 @@ function setToLocalStorage(key, value) {
   localStorage.setItem(key, value);
 }
 
-export function getLastQueryTime() {
-  const lastQueryTime = getFromLocalStorage(constants.LAST_FETCH_TIME) || 0;
-  return parseInt(lastQueryTime);
+export function getLastFetchDate() {
+  const lastFetchDate = getFromLocalStorage(constants.LAST_FETCH_TIME) || 0;
+  return parseInt(lastFetchDate);
 }
 
-export function setLastQueryTime(dbLastQueryTime) {
+export function setLastFetchDate(dbLastQueryTime) {
   setToLocalStorage(constants.LAST_FETCH_TIME, dbLastQueryTime);
 }
 
@@ -29,7 +29,12 @@ export function setStocksObject(stocksObject) {
 
 export function getBackendResponse() {
   const backendResponse = getFromLocalStorage(constants.BACKEND_RESPONSE);
-  return JSON.parse(backendResponse);
+    return JSON.parse(backendResponse);
+}
+
+export function clearBackendResponse() {
+  console.log("Clearing local storage")
+  localStorage.removeItem(constants.BACKEND_RESPONSE);
 }
 
 export function setBackendResponseObject(backendResponse) {
@@ -45,4 +50,8 @@ export function setLanguageLocalStorage(language) {
 
 export function getLanguage() {
   return getFromLocalStorage(constants.LANGUAGE);
+}
+
+export function clearAll() {
+  localStorage.clear()
 }

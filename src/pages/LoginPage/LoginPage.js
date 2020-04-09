@@ -2,92 +2,60 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
+import { useFirebase } from "react-redux-firebase";
+
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { Typography, Paper } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-
 import Grid from "@material-ui/core/Grid";
+
 import LoadingSpinner from "../../features/loadingSpinner";
 import BoldTitle from "../../features/boldTitle";
-// import {
-//   LoadingSpinner,
-//   CustomButton,
-//   BoldTitle,
-//   ErrorText
-// } from "../../components";
-
 import {
   PAGE_HOME,
   PAGE_REGISTER,
-  PAGE_FORGOT_PW
+  PAGE_FORGOT_PW,
 } from "../../layouts/constants";
-// import { MISC_LANG } from "../../utils/constants";
+import { clearBackendResponse } from "../../localStorageUtils";
+import { useLanguage } from "../../utils/customHooks";
+import { TEXT } from "../../translation";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   progress: {
-    margin: theme.spacing(2)
+    margin: theme.spacing(2),
   },
   link: {
-    textDecoration: "none"
+    textDecoration: "none",
   },
   form: {
     marginTop: 30,
-    marginBottom: 50
+    marginBottom: 50,
   },
   fieldWidth: {
-    width: "100%"
+    width: "100%",
   },
   paper: {
     padding: theme.spacing(theme.customForm.paper.paddingSpacing),
     maxWidth: theme.customForm.paper.maxWidth,
-    marginTop: "25vh"
-  }
+    marginTop: "25vh",
+  },
 }));
 
 const errorInitState = "";
 
-const WELCOME = {
-  en: "Welcome back!",
-  zh: "歡迎回來!"
-};
-
-const REGISTER = {
-  en: "Register",
-  zh: "登錄"
-};
-
-const FORGOT_PW = {
-  en: "Forgot password",
-  zh: "忘記密碼"
-};
-
-const LOGIN = {
-  en: "Login",
-  zh: "登入"
-};
-
-const PASSWORD = {
-  en: "Password",
-  zh: "密碼"
-};
-
-export default function LoginForm({ login, history }) {
+export default function LoginForm({ history }) {
+  const locale = useLanguage();
+  const firebase = useFirebase();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState(errorInitState);
 
-  const locale = "en";
   const classes = useStyles();
 
   function resetErrorState() {
     setError(errorInitState);
-  }
-
-  function changeLanguageUrl(path) {
-    path = locale ? `/${locale}${path}` : path;
-    return path;
   }
 
   async function handleOnSubmit(e) {
@@ -98,10 +66,15 @@ export default function LoginForm({ login, history }) {
     }
     setLoggingIn(true);
     try {
-      const resp = await login({ email, password });
+      const resp = await firebase.login({ email, password });
+      clearBackendResponse();
       history.push(PAGE_HOME);
     } catch (error) {
-      setError(error.message);
+      const errorCode =
+        error.code === "auth/wrong-password"
+          ? TEXT.wrongPassword[locale]
+          : error.message;
+      setError(errorCode);
     }
     setLoggingIn(false);
   }
@@ -109,13 +82,13 @@ export default function LoginForm({ login, history }) {
   return (
     <Paper className={classes.paper}>
       {loggingIn && <LoadingSpinner />}
-      <BoldTitle>{WELCOME[locale]}</BoldTitle>
+      <BoldTitle>{TEXT.welcome[locale]}</BoldTitle>
       <form onSubmit={handleOnSubmit} noValidate className={classes.form}>
         <TextField
           className={classes.fieldWidth}
           required
-          //   label={MISC_LANG.email[locale]}
-          onChange={e => {
+          label={TEXT.email[locale]}
+          onChange={(e) => {
             setEmail(e.target.value);
           }}
         />
@@ -123,27 +96,29 @@ export default function LoginForm({ login, history }) {
           className={classes.fieldWidth}
           required
           autoComplete="current-password"
-          label={PASSWORD[locale]}
+          label={TEXT.password[locale]}
           type="password"
-          onChange={e => {
+          onChange={(e) => {
             setPassword(e.target.value);
           }}
         />
         <br />
         <br />
-        <Button type="submit" color="primary" variant="contained">
-          Submit
-        </Button>
+        <Grid container justify="center">
+          <Button type="submit" color="primary" variant="contained">
+            {TEXT.submit[locale]}
+          </Button>
+        </Grid>
       </form>
       <Grid container justify="space-between">
-        <Link to={changeLanguageUrl(PAGE_FORGOT_PW)} className={classes.link}>
+        <Link to={PAGE_FORGOT_PW} className={classes.link}>
           <Typography variant="caption" align="left" color="secondary">
-            {FORGOT_PW[locale]}
+            {TEXT.forgotPassword[locale]}
           </Typography>
         </Link>
-        <Link to={changeLanguageUrl(PAGE_REGISTER)} className={classes.link}>
+        <Link to={PAGE_REGISTER} className={classes.link}>
           <Typography variant="caption" align="right" color="secondary">
-            {REGISTER[locale]}
+            {TEXT.register[locale]}
           </Typography>
         </Link>
       </Grid>

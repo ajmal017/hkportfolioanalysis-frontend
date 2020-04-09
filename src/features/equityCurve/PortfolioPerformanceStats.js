@@ -6,6 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
 import { StatBox, createDataObj } from "../statBox";
+import { useLanguage } from "../../utils/customHooks";
+import { TEXT } from "../../translation";
 
 const useStyles = makeStyles(theme => ({
   stockIncreased: {
@@ -24,6 +26,7 @@ export default function PortfolioPerformanceStats({
   portfolioReturn,
   marketReturn
 }) {
+  const locale = useLanguage();
   const classes = useStyles();
   function chooseClassToUse(value) {
     return clsx({
@@ -35,21 +38,21 @@ export default function PortfolioPerformanceStats({
 
   const stats = [
     createDataObj(
-      "Max. Drawdown",
+      TEXT.maxDD[locale],
       maxDrawdown,
       false,
       true,
-      classes.stockDecreased
+      chooseClassToUse(maxDrawdown)
     ),
     createDataObj(
-      "Portfolio",
+      TEXT.portfolio[locale],
       portfolioReturn,
       false,
       true,
       chooseClassToUse(portfolioReturn)
     ),
     createDataObj(
-      "Market",
+      TEXT.hsi[locale],
       marketReturn,
       false,
       true,

@@ -1,7 +1,14 @@
 .ag-header-cell {
   background: #202b43;
-  color: rgba(255,255,255);
+  color: rgba(255, 255, 255);
   /* color: #bbc9e0; */
+}
+.ag-center-cols-viewport {
+  background-color: #202b43;
+}
+
+.ag-layout-normal {
+  background-color: #202b43;
 }
 
 .ag-theme-balham-dark .ag-header {

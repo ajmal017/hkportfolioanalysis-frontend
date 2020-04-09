@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+import {
+  selectLastBusinessDay
+} from "../features/lastBusinessDay/lastBusinessDaySlice";
+import {
+  selectLanguage
+} from "../features/language/languageSlice";
 
 export function useWindow() {
   const [width, setWidth] = useState(0);
@@ -99,12 +106,17 @@ export function useIsAuthLoaded() {
   return isAuthLoaded;
 }
 
-// export function useLanguage() {
-//   const language = useSelector(state => state.language.language);
-//   return language;
-// }
-
 export function useIsMobile() {
   const isMobile = useMediaQuery("(max-width:680px)");
   return isMobile;
+}
+
+export function useLastBusinessDay() {
+  const lastBusinessDate = useSelector(selectLastBusinessDay);
+  return lastBusinessDate;
+}
+
+export function useLanguage(){
+  const language = useSelector(selectLanguage);
+  return language
 }

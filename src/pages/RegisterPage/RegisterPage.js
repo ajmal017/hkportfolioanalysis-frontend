@@ -11,43 +11,32 @@ import Grid from "@material-ui/core/Grid";
 
 import LoadingSpinner from "../../features/loadingSpinner";
 import BoldTitle from "../../features/boldTitle";
-
+import NotificationPopUp from "../../features/notificationPopUp";
 import { registerUser, sendVerification } from "../../firebase/crud";
 import { PAGE_HOME } from "../../layouts/constants";
+import { useLanguage } from "../../utils/customHooks";
+import { TEXT } from "../../translation";
+import { validateEmail } from "../../utils/helpers";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
     marginTop: 30,
-    marginBottom: 50
+    marginBottom: 50,
   },
   fieldWidth: {
-    width: "100%"
+    width: "100%",
   },
   paper: {
     padding: theme.spacing(theme.customForm.paper.paddingSpacing),
     maxWidth: theme.customForm.paper.maxWidth,
-    marginTop: "25vh"
-  }
+    marginTop: "25vh",
+  },
 }));
 
 const errorInitState = "";
 
-const REGISTER = {
-  en: "Register",
-  zh: "登錄"
-};
-
-const PASSWORD = {
-  en: "Password",
-  zh: "密碼"
-};
-
-const CONFIRM_PASSWORD = {
-  en: "Confirm Password",
-  zh: "確認密碼"
-};
-
 function RegisterPage({ history }) {
+  const locale = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -55,7 +44,6 @@ function RegisterPage({ history }) {
   const [error, setError] = useState(errorInitState);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  const locale = "en";
   const classes = useStyles();
   const firebase = useFirebase();
 
@@ -75,63 +63,81 @@ function RegisterPage({ history }) {
   }, [password, password2]);
 
   async function handleOnSubmit(e) {
-    e.preventDefault()
-    setError("");
-    setRegistering(true)
-    const authUser = await registerUser(firebase, email, password);
-    console.log(authUser)
-    try {
-      await sendVerification(firebase);
-    } catch (error) {
-      console.log(error);
-      setError(error.message);
-    } finally {
-      setNotificationOpen(true);
-      history.push(PAGE_HOME);
+    e.preventDefault();
+    if (!(email && password && password2)) {
+      return;
     }
-    setRegistering(false)
+    setError("");
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setError("Incorrect email format");
+      return;
+    }
+    setRegistering(true);
+    try {
+      await registerUser(firebase, email, password);
+      setNotificationOpen(true);
+      await sendVerification(firebase);
+      history.push(PAGE_HOME);
+    } catch (err) {
+      console.log(err);
+      setError(err.message);
+    }
+    setRegistering(false);
   }
 
   return (
     <Paper className={classes.paper}>
       {registering && <LoadingSpinner />}
-      <BoldTitle>{REGISTER[locale]}</BoldTitle>
+      <BoldTitle>{TEXT.register[locale]}</BoldTitle>
       <form onSubmit={handleOnSubmit} noValidate className={classes.form}>
         <TextField
           className={classes.fieldWidth}
           required
-          //   label={MISC_LANG.email[locale]}
-          onChange={e => {
+          label={TEXT.email[locale]}
+          onChange={(e) => {
             setEmail(e.target.value);
           }}
         />
         <TextField
           className={classes.fieldWidth}
           required
-          label={PASSWORD[locale]}
+          label={TEXT.password[locale]}
           type="password"
-          onChange={e => {
+          onChange={(e) => {
             setPassword(e.target.value);
           }}
         />
         <TextField
           className={classes.fieldWidth}
           required
-          label={CONFIRM_PASSWORD[locale]}
+          label={TEXT.confirmPassword[locale]}
           type="password"
-          onChange={e => {
+          onChange={(e) => {
             setPassword2(e.target.value);
           }}
         />
         <br />
         <br />
-        <Button type="submit" color="primary" variant="contained">
-          Submit
-        </Button>
+        <Grid container justify="center">
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            disabled={!!error}
+          >
+            {TEXT.submit[locale]}
+          </Button>
+        </Grid>
       </form>
       <Typography color="error" variant="body2" align="center">
         {error}
       </Typography>
+      <NotificationPopUp
+        active={notificationOpen}
+        setState={setNotificationOpen}
+        text={TEXT.verifyEmail[locale]}
+      />
     </Paper>
   );
 }

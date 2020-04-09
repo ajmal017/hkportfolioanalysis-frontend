@@ -10,30 +10,31 @@ import Grid from "@material-ui/core/Grid";
 import { Title } from "../title";
 import { QuestionMarkAnnotation } from "../questionMarkAnnotation";
 import { StatBox, createDataObj } from "../statBox";
-import { usePaperWidth } from "../../utils/customHooks";
+import { usePaperWidth, useLanguage } from "../../utils/customHooks";
+import { TEXT } from "../../translation";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
-    margin: "auto"
+    margin: "auto",
   },
   paper2: {
     padding: theme.spacing(2),
     margin: "auto",
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   hedgeText: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   hedgeTextStrong: {
-    fontWeight: 600
+    fontWeight: 600,
   },
   smallFont: {
-    fontSize: 12
+    fontSize: 12,
   },
   icon: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }));
 
 export default function PortfolioStats({
@@ -42,22 +43,24 @@ export default function PortfolioStats({
   alpha,
   beta,
   sharpe,
-  sortino
+  sortino,
 }) {
   const classes = useStyles();
   const displayWidth = usePaperWidth();
+  const locale = useLanguage();
+
   const data01 = [
-    createDataObj("Alpha", alpha, true, true),
-    createDataObj("Beta", beta, false, false),
-    createDataObj("Sharpe", sharpe, true, false),
-    createDataObj("Sortino", sortino, true, false)
+    createDataObj(TEXT.alpha[locale], alpha, true, true),
+    createDataObj(TEXT.beta[locale], beta, false, false),
+    createDataObj(TEXT.sharpe[locale], sharpe, true, false),
+    createDataObj(TEXT.sortino[locale], sortino, true, false),
   ];
 
   return (
     <Paper className={classes.paper} style={{ width: displayWidth }}>
       <Title>
-        Statistics
-        <QuestionMarkAnnotation text="Calculations based on 750 days of daily returns" />
+        {TEXT.statistics[locale]}
+        <QuestionMarkAnnotation text={TEXT.calculations[locale]} />
       </Title>
 
       <Grid
@@ -67,7 +70,7 @@ export default function PortfolioStats({
         spacing={2}
         justify="space-evenly"
       >
-        {data01.map(dataObj => (
+        {data01.map((dataObj) => (
           <StatBox
             key={dataObj.label}
             value={dataObj.value}
@@ -84,6 +87,7 @@ export default function PortfolioStats({
 
 function HedgeText({ lot, hedgeProduct }) {
   const classes = useStyles();
+  const locale = useLanguage();
 
   return (
     <Grid item>
@@ -93,13 +97,13 @@ function HedgeText({ lot, hedgeProduct }) {
             variant="body2"
             className={clsx(classes.hedgeText, classes.smallFont)}
           >
-            Completely hedge your portfolio by shorting:
+            {TEXT.hedge[locale]}
           </Typography>
         </Grid>
         <Grid item>
           <Typography variant="body2" className={classes.smallFont}>
             {<span className={classes.hedgeTextStrong}>{lot.toFixed(2)} </span>}
-            contracts of
+            {TEXT.contracts[locale]}
             {<span className={classes.hedgeTextStrong}> {hedgeProduct} </span>}
           </Typography>
         </Grid>
@@ -114,10 +118,10 @@ PortfolioStats.propTypes = {
   alpha: PropTypes.number.isRequired,
   beta: PropTypes.number.isRequired,
   sharpe: PropTypes.number.isRequired,
-  sortino: PropTypes.number.isRequired
+  sortino: PropTypes.number.isRequired,
 };
 
 HedgeText.propTypes = {
   lot: PropTypes.number.isRequired,
-  hedgeProduct: PropTypes.string.isRequired
+  hedgeProduct: PropTypes.string.isRequired,
 };

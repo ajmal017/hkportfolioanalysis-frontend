@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
 import { reduxFirestore } from "redux-firestore";
-import { reactReduxFirebase, getFirebase } from "react-redux-firebase";
+import { getFirebase } from "react-redux-firebase";
 
 import rootReducer from "./state";
 import firebase, { config } from "./firebase";

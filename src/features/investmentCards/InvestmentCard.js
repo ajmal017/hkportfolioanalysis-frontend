@@ -9,32 +9,32 @@ import { Typography } from "@material-ui/core";
 
 import {
   convertNumberToPercent,
-  formatNumberToHumanReadable
+  formatNumberToHumanReadable,
 } from "../../utils/helpers";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
     marginBottom: theme.spacing(2),
-    background: theme.palette.elavatedPaper
+    background: theme.palette.elavatedPaper,
   },
   stockIncreased: {
-    color: theme.palette.stockColor.increased
+    color: theme.palette.stockColor.increased,
   },
   stockDecreased: {
-    color: theme.palette.stockColor.decreased
+    color: theme.palette.stockColor.decreased,
   },
   stockNoChange: {
-    color: theme.palette.stockColor.noChange
-  }
+    color: theme.palette.stockColor.noChange,
+  },
 }));
 
 export default function InvestmentCard({
   stockCode,
   stockName,
   stockOriginalValue,
-  stockValuePctChange
+  stockValuePctChange,
 }) {
   const classes = useStyles();
   const stockValueChange = stockOriginalValue * stockValuePctChange;
@@ -50,7 +50,7 @@ export default function InvestmentCard({
   const classToUse = clsx({
     [classes.stockIncreased]: stockValueChange > 0,
     [classes.stockDecreased]: stockValueChange < 0,
-    [classes.stockNoChange]: stockValueChange === 0
+    [classes.stockNoChange]: stockValueChange === 0,
   });
 
   return (
@@ -88,5 +88,5 @@ InvestmentCard.propTypes = {
   stockCode: PropTypes.string.isRequired,
   stockName: PropTypes.string.isRequired,
   stockOriginalValue: PropTypes.number.isRequired,
-  stockValuePctChange: PropTypes.number.isRequired
+  stockValuePctChange: PropTypes.number.isRequired,
 };
