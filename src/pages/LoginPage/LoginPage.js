@@ -38,7 +38,9 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(theme.customForm.paper.paddingSpacing),
     maxWidth: theme.customForm.paper.maxWidth,
-    marginTop: "25vh",
+    top: "50%",
+    position: "absolute",
+    transform: "translate(0%, -60%)",
   },
 }));
 
@@ -66,8 +68,8 @@ export default function LoginForm({ history }) {
     }
     setLoggingIn(true);
     try {
-      const resp = await firebase.login({ email, password });
       clearBackendResponse();
+      await firebase.login({ email, password });
       history.push(PAGE_HOME);
     } catch (error) {
       const errorCode =

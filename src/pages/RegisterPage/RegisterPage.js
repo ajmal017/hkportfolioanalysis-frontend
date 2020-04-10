@@ -29,7 +29,10 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(theme.customForm.paper.paddingSpacing),
     maxWidth: theme.customForm.paper.maxWidth,
-    marginTop: "25vh",
+    position: "absolute",
+    transform: "translate(0%, -60%)",
+    top: "50%",
+
   },
 }));
 

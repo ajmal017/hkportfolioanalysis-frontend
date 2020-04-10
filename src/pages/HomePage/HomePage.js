@@ -19,6 +19,7 @@ import {
 } from "./middleware";
 import { fetchLastBusinessDateRedux } from "../../features/lastBusinessDay/lastBusinessDaySlice";
 import LoadingSpinner from "../../features/loadingSpinner";
+import { useIsMobile } from "../../utils/customHooks";
 
 const TITLE = {
   "en/": "Petangle - Your Pet's Nutrition Table",
@@ -31,8 +32,6 @@ const CONTENT = {
   "zh/":
     "為你的貓狗尋找最好的糧食。500+ 貓狗糧、乾糧、濕糧、小食營養。找高蛋白質低碳水化合物",
 };
-
-const SPACING = 4;
 
 function sum(items) {
   return items.reduce(function (a, b) {
@@ -48,21 +47,25 @@ function HomePage({ history }) {
   if (isFirebaseLoaded) {
     dispatch(fetchLastBusinessDateRedux());
   }
+  const isMobile = useIsMobile();
 
   const userPortfolio = hooks.useUserPortfolio();
   const backendData = hooks.useBackendData();
 
   let currentLanguage = history.location.pathname.replace("/", "");
 
+  const horizontalSpacing = 4;
+  const verticalSpacing = isMobile ? 0 : 4;
+
   return (
     <div>
       {checkFilledObject(backendData) && checkFilledObject(userPortfolio) ? (
-        <Grid container direction="row" spacing={SPACING} justify="center">
+        <Grid container direction="row" spacing={verticalSpacing} justify="center">
           <Grid item>
             <Grid
               container
+              spacing={horizontalSpacing}
               direction="column"
-              spacing={SPACING}
               justify="center"
             >
               <Grid item>
@@ -87,7 +90,7 @@ function HomePage({ history }) {
             <Grid
               container
               direction="column"
-              spacing={SPACING}
+              spacing={horizontalSpacing}
               justify="center"
             >
               <Grid item>

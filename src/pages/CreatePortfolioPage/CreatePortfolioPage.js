@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(theme.customForm.paper.paddingSpacing),
     maxWidth: theme.customForm.paper.maxWidth,
-    marginTop: "25vh",
+    marginTop: "10vh",
   },
   icon: {
     cursor: "pointer",

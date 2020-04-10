@@ -2,7 +2,7 @@ import React from "react";
 
 import { useHistory } from "react-router-dom";
 import { useFirebase } from "react-redux-firebase";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
@@ -119,16 +119,15 @@ export default function NavigationBar() {
     ? [...ICONS, ...LOGGEDIN_ICONS]
     : [...ICONS, ...LOGGEDOUT_ICONS];
 
-  function handleOnClick(path) {
+  async function handleOnClick(path) {
     if (path === "/logout") {
-      logout(firebase);
       clearBackendResponse();
+      await logout(firebase);
       window.location.reload();
     } else if (path === "changeLanguage") {
       const value = locale === "en" ? "zh" : "en";
       dispatch(changeLanguage(value));
     } else {
-      // path = locale ? `/${locale}${path}` : path;
       history.push(path);
     }
   }
