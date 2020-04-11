@@ -16,7 +16,7 @@ import { TEXT } from "../../translation";
 
 function createColumnDef(headerName) {
   let obj = { headerName, field: headerName, width: 70 };
-  obj = headerName === " " ? { ...obj, pinned: "left" } : obj;
+  obj = headerName === " " ? { ...obj, pinned: "left", cellStyle: { fontWeight: 600} } : obj;
   return obj;
 }
 
