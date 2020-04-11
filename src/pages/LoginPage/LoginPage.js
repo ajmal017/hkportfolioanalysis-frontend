@@ -17,7 +17,7 @@ import {
   PAGE_REGISTER,
   PAGE_FORGOT_PW,
 } from "../../layouts/constants";
-import { clearBackendResponse } from "../../localStorageUtils";
+import { clearAll } from "../../localStorageUtils";
 import { useLanguage } from "../../utils/customHooks";
 import { TEXT } from "../../translation";
 
@@ -68,7 +68,7 @@ export default function LoginForm({ history }) {
     }
     setLoggingIn(true);
     try {
-      clearBackendResponse();
+      clearAll();
       await firebase.login({ email, password });
       history.push(PAGE_HOME);
     } catch (error) {

@@ -60,7 +60,12 @@ function HomePage({ history }) {
   return (
     <div>
       {checkFilledObject(backendData) && checkFilledObject(userPortfolio) ? (
-        <Grid container direction="row" spacing={verticalSpacing} justify="center">
+        <Grid
+          container
+          direction="row"
+          spacing={verticalSpacing}
+          justify="center"
+        >
           <Grid item>
             <Grid
               container

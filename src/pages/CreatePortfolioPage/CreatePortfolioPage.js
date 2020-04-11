@@ -9,6 +9,11 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 import LoadingSpinner from "../../features/loadingSpinner";
 import BoldTitle from "../../features/boldTitle";
@@ -17,7 +22,7 @@ import { useUserId } from "../../utils/customHooks";
 
 import { createPortfolio } from "../../firebase/crud";
 import { PAGE_HOME } from "../../layouts/constants";
-import { clearBackendResponse } from "../../localStorageUtils";
+import { clearBackendResponse, clearAll } from "../../localStorageUtils";
 import { useLanguage } from "../../utils/customHooks";
 import { TEXT } from "../../translation";
 
@@ -48,8 +53,10 @@ const errorInitState = "";
 export default function CreatePortfolioPage({ history }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(errorInitState);
+  const [openDialog, setOpenDialog] = React.useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [noOfFields, setNoOfFields] = useState(2);
+  const [submitFormObj, setSubmitFormObj] = useState({});
   const locale = useLanguage();
 
   const classes = useStyles();
@@ -69,14 +76,15 @@ export default function CreatePortfolioPage({ history }) {
   async function handleOnSubmit(e) {
     e.preventDefault();
     resetErrorState();
-    setSubmitting(true);
-
     const submitForm = {};
     let stockBasket = new Set();
     const fields = e.target;
     for (let i = 1; i < fields.length - 1; i += 2) {
       const stockCode = fields[i - 1].value;
       const money = parseFloat(fields[i].value);
+      if (stockCode === "" || isNaN(money)) {
+        return
+      }
       if (stockBasket.has(stockCode)) {
         setError("There are repeating stock codes");
         setSubmitting(false);
@@ -85,16 +93,26 @@ export default function CreatePortfolioPage({ history }) {
       stockBasket.add(stockCode);
       submitForm[stockCode] = money;
     }
+    setSubmitFormObj(submitForm)
+    setOpenDialog(true);
+  }
+
+  async function confirmedSubmit() {
+    setSubmitting(true);
+    handleClose();
     try {
-      await createPortfolio(firebase, userId, submitForm); // also saves to local storage
-      clearBackendResponse();
+      clearAll();
+      await createPortfolio(firebase, userId, submitFormObj); // also saves to local storage
       setNotificationOpen(true);
       history.push(PAGE_HOME);
     } catch (error) {
       console.log(error);
       setError(error.message);
     }
-    setSubmitting(false);
+  }
+
+  function handleClose() {
+    setOpenDialog(false);
   }
 
   return (
@@ -138,6 +156,23 @@ export default function CreatePortfolioPage({ history }) {
       <Typography color="error" variant="body2" align="center">
         {error}
       </Typography>
+      <Dialog open={openDialog} onClose={handleClose}>
+        <DialogTitle>{"Save Portfolio"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Submitting a new portfolio will overwrite your last one. Do you want
+            to continue?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmedSubmit} color="secondary" autoFocus>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

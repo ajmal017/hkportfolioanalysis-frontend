@@ -33,7 +33,7 @@ export function getBackendResponse() {
 }
 
 export function clearBackendResponse() {
-  console.log("Clearing local storage")
+  console.log("Clearing backend response from local storage")
   localStorage.removeItem(constants.BACKEND_RESPONSE);
 }
 

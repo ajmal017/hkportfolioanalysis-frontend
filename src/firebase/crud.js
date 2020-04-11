@@ -22,7 +22,6 @@ async function updateObject(firebase, path, obj) {
   }
 }
 
-
 async function deleteObjectBasedOnValue(firebase, path, key, value) {
   const ref = firebase.ref(path);
   let deleted = false;
@@ -66,7 +65,7 @@ export async function sendVerification(firebase) {
 
 export async function logout(firebase) {
   await firebase.auth().signOut();
-  clearBackendResponse()
+  clearBackendResponse();
 }
 
 export async function createPortfolio(firebase, userId, stockObj) {
@@ -75,8 +74,9 @@ export async function createPortfolio(firebase, userId, stockObj) {
   const path = `${constants.END_POINT_USERS}/${userId}/portfolio`;
   if (userId) {
     updateObject(firebase, path, obj);
+  } else {
+    setStocksObject(obj);
   }
-  setStocksObject(obj);
 }
 
 export async function fetchStockName(firebase, stockCode, language) {

@@ -21,20 +21,27 @@ function createDefaultPortfolio() {
 }
 
 export function useUserPortfolio() {
+  /* users loads from firebase. non users load from local storage, or default */
   let userProfile = useSelector((state) => state.firebase.profile);
-  if (!userProfile.isLoaded) {
+  let firebaseLoaded = useFirebaseLoaded();
+  if (firebaseLoaded) {
+    if (userProfile.isEmpty) {
+      return localStorage.getStocksObject() || createDefaultPortfolio();
+    } else {
+      return userProfile.portfolio || createDefaultPortfolio();
+    }
+  } else {
     return {};
   }
-  let userPortfolio = userProfile.portfolio || {};
-  if (Object.keys(userPortfolio).length === 0) {
-    userPortfolio = localStorage.getStocksObject() || createDefaultPortfolio();
-  }
-  return userPortfolio;
+}
+
+function useFirebaseLoaded() {
+  return useSelector((state) => state.firebase.profile.isLoaded);
 }
 
 export function useBackendData() {
   const userPortfolio = useUserPortfolio();
-  const portfolioIsLoaded = !!Object.keys(userPortfolio).length;
+  const firebaseLoaded = useFirebaseLoaded();
   const lastBusinessDate = useLastBusinessDay();
   const lastBusinessDateIsLoaded = lastBusinessDate !== 0;
 
@@ -69,20 +76,20 @@ export function useBackendData() {
     const cachedData = localStorage.getBackendResponse();
     const lastFetchDate = localStorage.getLastFetchDate();
     const hasUpdates = lastFetchDate && lastBusinessDate <= lastFetchDate;
-    if (cachedData && hasUpdates) {
+    if (cachedData && !hasUpdates) {
       console.log(
         `Getting backend response from local storage. Last fetch time: ${lastFetchDate}`
       );
       setbackendData(cachedData);
     } else {
-      if (portfolioIsLoaded && lastBusinessDateIsLoaded) {
+      if (firebaseLoaded && lastBusinessDateIsLoaded) {
         console.log(
           `Not cached. Getting backend response from backend. Last fetch time: ${lastFetchDate}`
         );
         fetchData();
       }
     }
-  }, [portfolioIsLoaded, lastBusinessDateIsLoaded, lastBusinessDate]);
+  }, [firebaseLoaded, lastBusinessDateIsLoaded, lastBusinessDate]);
   return backendData;
 }
 
