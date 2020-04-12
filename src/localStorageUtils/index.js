@@ -55,3 +55,17 @@ export function getLanguage() {
 export function clearAll() {
   localStorage.clear()
 }
+
+export function getStockCodes() {
+  return JSON.parse(getFromLocalStorage(constants.STOCK_CODES));
+}
+
+export function setStockCodes(stockCodes) {
+  const date = new Date();
+  const obj = {
+    stockCodes,
+    queryDate: date.getDate(),
+  };
+  setToLocalStorage(constants.STOCK_CODES, JSON.stringify(obj));
+
+}

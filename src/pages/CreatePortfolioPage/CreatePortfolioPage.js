@@ -19,18 +19,15 @@ import LoadingSpinner from "../../features/loadingSpinner";
 import BoldTitle from "../../features/boldTitle";
 import StockField from "../../features/stockField";
 import { useUserId } from "../../utils/customHooks";
+import { Disclaimer } from "../../features/disclaimer";
 
 import { createPortfolio } from "../../firebase/crud";
 import { PAGE_HOME } from "../../layouts/constants";
-import { clearBackendResponse, clearAll } from "../../localStorageUtils";
+import { clearAll } from "../../localStorageUtils";
 import { useLanguage } from "../../utils/customHooks";
 import { TEXT } from "../../translation";
 
 const useStyles = makeStyles((theme) => ({
-  form: {
-    marginTop: 30,
-    marginBottom: 50,
-  },
   fieldWidth: {
     width: "100%",
   },
@@ -54,8 +51,7 @@ export default function CreatePortfolioPage({ history }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(errorInitState);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const [noOfFields, setNoOfFields] = useState(2);
+  const [noOfFields, setNoOfFields] = useState(1);
   const [submitFormObj, setSubmitFormObj] = useState({});
   const locale = useLanguage();
 
@@ -79,11 +75,13 @@ export default function CreatePortfolioPage({ history }) {
     const submitForm = {};
     let stockBasket = new Set();
     const fields = e.target;
-    for (let i = 1; i < fields.length - 1; i += 2) {
-      const stockCode = fields[i - 1].value;
+
+    // autocomplete components also are treated as fields
+    for (let i = 3; i < fields.length - 1; i += 4) {
+      const stockCode = fields[i - 3].value;
       const money = parseFloat(fields[i].value);
       if (stockCode === "" || isNaN(money)) {
-        return
+        return;
       }
       if (stockBasket.has(stockCode)) {
         setError("There are repeating stock codes");
@@ -93,7 +91,7 @@ export default function CreatePortfolioPage({ history }) {
       stockBasket.add(stockCode);
       submitForm[stockCode] = money;
     }
-    setSubmitFormObj(submitForm)
+    setSubmitFormObj(submitForm);
     setOpenDialog(true);
   }
 
@@ -103,7 +101,6 @@ export default function CreatePortfolioPage({ history }) {
     try {
       clearAll();
       await createPortfolio(firebase, userId, submitFormObj); // also saves to local storage
-      setNotificationOpen(true);
       history.push(PAGE_HOME);
     } catch (error) {
       console.log(error);
@@ -116,63 +113,62 @@ export default function CreatePortfolioPage({ history }) {
   }
 
   return (
-    <Paper className={classes.paper}>
-      {submitting && <LoadingSpinner />}
-      <BoldTitle>{TEXT.createPortfolio[locale]}</BoldTitle>
-      <form
-        className={classes.form}
-        onSubmit={handleOnSubmit}
-        noValidate
-        className={classes.form}
-      >
-        {Array.from(Array(noOfFields), (e, i) => (
-          <StockField key={i} />
-        ))}
-        <Grid
-          container
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justify="center"
-        >
-          <Grid item xs={2}>
-            <AddBoxIcon
-              className={classes.icon}
-              onClick={() => setNoOfFields(noOfFields + 1)}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <RemoveCircleIcon
-              className={classes.icon}
-              onClick={() => decrement()}
-            />
-          </Grid>
-        </Grid>
+    <div>
+      <Disclaimer>{TEXT.portfolioAdvice[locale]}</Disclaimer>
 
-        <Button type="submit" color="primary" variant="contained">
-          {TEXT.submit[locale]}
-        </Button>
-      </form>
-      <Typography color="error" variant="body2" align="center">
-        {error}
-      </Typography>
-      <Dialog open={openDialog} onClose={handleClose}>
-        <DialogTitle>{"Save Portfolio"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Submitting a new portfolio will overwrite your last one. Do you want
-            to continue?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
+      <Paper className={classes.paper}>
+        {submitting && <LoadingSpinner />}
+        <BoldTitle>{TEXT.createPortfolio[locale]}</BoldTitle>
+        <form className={classes.form} onSubmit={handleOnSubmit} noValidate>
+          {Array.from(Array(noOfFields), (e, i) => (
+            <StockField key={i} />
+          ))}
+          <Grid
+            container
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justify="center"
+          >
+            <Grid item xs={2}>
+              <AddBoxIcon
+                className={classes.icon}
+                onClick={() => setNoOfFields(noOfFields + 1)}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <RemoveCircleIcon
+                className={classes.icon}
+                onClick={() => decrement()}
+              />
+            </Grid>
+          </Grid>
+
+          <Button type="submit" color="primary" variant="contained">
+            {TEXT.submit[locale]}
           </Button>
-          <Button onClick={confirmedSubmit} color="secondary" autoFocus>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Paper>
+        </form>
+        <Typography color="error" variant="body2" align="center">
+          {error}
+        </Typography>
+        <Dialog open={openDialog} onClose={handleClose}>
+          <DialogTitle>{"Save Portfolio"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Submitting a new portfolio will overwrite your last one. Do you
+              want to continue?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={confirmedSubmit} color="secondary" autoFocus>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
+    </div>
   );
 }

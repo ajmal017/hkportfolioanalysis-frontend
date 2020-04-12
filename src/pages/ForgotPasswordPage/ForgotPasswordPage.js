@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { useFirebase } from "react-redux-firebase";
 
@@ -15,7 +15,6 @@ import { useLanguage } from "../../utils/customHooks";
 import { validateEmail } from "../../utils/helpers";
 import { TEXT } from "../../translation";
 import { sendPasswordResetEmail } from "../../firebase/crud";
-import { PAGE_LOGIN } from "../../layouts/constants";
 
 const errorInitState = "";
 
@@ -65,7 +64,6 @@ function ForgotPasswordPage({ history }) {
     try {
       await sendPasswordResetEmail(firebase, email);
       setNotificationOpen(true);
-      // history.push(PAGE_LOGIN);
     } catch (error) {
       setError(error.message);
     }

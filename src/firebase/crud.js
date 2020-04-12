@@ -1,6 +1,11 @@
 import * as constants from "./constants";
 import { config } from "./firebase";
-import { setStocksObject, clearBackendResponse } from "../localStorageUtils";
+import {
+  setStocksObject,
+  clearBackendResponse,
+  setStockCodes,
+  getStockCodes,
+} from "../localStorageUtils";
 
 async function fetchFirebase(firebase, endPoint) {
   const ref = firebase.ref(endPoint);
@@ -19,22 +24,6 @@ async function updateObject(firebase, path, obj) {
   } catch (error) {
     console.log(error);
     return false;
-  }
-}
-
-async function deleteObjectBasedOnValue(firebase, path, key, value) {
-  const ref = firebase.ref(path);
-  let deleted = false;
-  try {
-    const snapshot = await ref.orderByChild(key).equalTo(value).once("value");
-    snapshot.forEach((childSnapshot) => {
-      ref.child(childSnapshot.key).remove();
-      deleted = true;
-    });
-    return { status: "success", deleted };
-  } catch (error) {
-    // console.log(erorr);
-    return { status: "fail", deleted };
   }
 }
 
@@ -83,4 +72,28 @@ export async function fetchStockName(firebase, stockCode, language) {
   const path = `${constants.END_POINT_STOCKS}/${stockCode}/name/${language}`;
   const stockName = await fetchFirebase(firebase, path);
   return stockName;
+}
+
+export async function fetchStockCodes() {
+  // firebase web does not have shallow
+
+  const date = new Date();
+  const cachedStockCodes = getStockCodes();
+  if (cachedStockCodes && cachedStockCodes.queryDate === date.getDate()) {
+    console.log("Getting stocks codes from cache");
+    return cachedStockCodes.stockCodes;
+  }
+  console.log("Fetching stock codes from firebase");
+  const path = `${config.databaseURL}/${constants.END_POINT_STOCKS}.json?shallow=true`;
+  const resp = await fetch(path, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  const json_ = await resp.json();
+  const stockCodes = Object.keys(json_);
+  setStockCodes(stockCodes);
+  return stockCodes;
 }

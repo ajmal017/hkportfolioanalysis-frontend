@@ -133,6 +133,12 @@ function PortfolioPieChart({ portfolioCurrentAmount, stocks, noOfStocks }) {
   const classes = useStyles();
   const locale = useLanguage();
 
+  let fontSize = 23;
+  if (portfolioCurrentAmount >= 100000000) {
+    fontSize = 19
+  } else if (portfolioCurrentAmount >= 10000000){
+    fontSize = 21
+  }
   return (
     <PieChart width={200} height={200} margin={{ left: -15 }}>
       <Pie
@@ -148,7 +154,7 @@ function PortfolioPieChart({ portfolioCurrentAmount, stocks, noOfStocks }) {
           value={`${formatNumberToHumanReadable(portfolioCurrentAmount, 0)}`}
           position="centerBottom"
           className={classes.labelTop}
-          fontSize="23px"
+          fontSize={`${fontSize}px`}
         />
         <Label
           value={`${noOfStocks} ${TEXT.stocks[locale]}`}

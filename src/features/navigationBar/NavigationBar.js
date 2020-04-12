@@ -158,10 +158,9 @@ export default function NavigationBar() {
         >
           <List className={classes.iconGroup}>
             {iconsToShow.map((obj, i) => (
-              <Tooltip title={obj.label[locale]}>
+              <Tooltip key={i} title={obj.label[locale]}>
                 <ListItem
                   button
-                  key={i}
                   className={classes.iconContainer}
                   onClick={() => handleOnClick(obj.to)}
                 >

@@ -1,15 +1,16 @@
 import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
+import { Helmet } from "react-helmet";
 
 import Grid from "@material-ui/core/Grid";
 
-// import { HelmetWrapper } from "../../components";
 import { PortfolioDoughnut } from "../../features/portfolioDoughnut";
 import { CorrelationMatrix } from "../../features/correlationMatrix";
 import { InvestmentCards } from "../../features/investmentCards";
 import { PortfolioStats } from "../../features/portfolioStats";
 import { EquityCurve } from "../../features/equityCurve";
+import { Disclaimer } from "../../features/disclaimer";
 
 import * as hooks from "./hooks";
 import { checkFilledObject } from "../../utils/helpers";
@@ -19,18 +20,14 @@ import {
 } from "./middleware";
 import { fetchLastBusinessDateRedux } from "../../features/lastBusinessDay/lastBusinessDaySlice";
 import LoadingSpinner from "../../features/loadingSpinner";
-import { useIsMobile } from "../../utils/customHooks";
-
-const TITLE = {
-  "en/": "Petangle - Your Pet's Nutrition Table",
-  "zh/": "Petangle - 你的寵物糧食營養網",
-};
+import { useIsMobile, useLanguage } from "../../utils/customHooks";
+import {TEXT} from "../../translation";
 
 const CONTENT = {
-  "en/":
-    "Find the best products for your pet with our nutrition database. 500+ cat & dog dry food/wet food/snack. Find high protein and low carb food.",
-  "zh/":
-    "為你的貓狗尋找最好的糧食。500+ 貓狗糧、乾糧、濕糧、小食營養。找高蛋白質低碳水化合物",
+  en:
+    "Monitor your Hong Kong portfolio with our dashboard. Key Performance Indicators: Alpha, Beta, Sharpe, Sortino, Max. Drawdown, Correlation provided.",
+  zh:
+    "監控你的香港股票投資組合. 我們提供: 阿爾法, 貝塔, 夏普, 索提諾, 最大回撤, 相關等指標.",
 };
 
 function sum(items) {
@@ -52,13 +49,14 @@ function HomePage({ history }) {
   const userPortfolio = hooks.useUserPortfolio();
   const backendData = hooks.useBackendData();
 
-  let currentLanguage = history.location.pathname.replace("/", "");
-
+  let localeURL = history.location.pathname.replace("/", ""); // must use url for seo
+  const locale = useLanguage();
   const horizontalSpacing = 4;
   const verticalSpacing = isMobile ? 0 : 4;
 
   return (
     <div>
+      <Disclaimer>{TEXT.disclaimer[locale]}</Disclaimer>
       {checkFilledObject(backendData) && checkFilledObject(userPortfolio) ? (
         <Grid
           container
@@ -131,10 +129,9 @@ function HomePage({ history }) {
         <LoadingSpinner />
       )}
 
-      {/* <HelmetWrapper
-        title={TITLE[currentLanguage]}
-        content={CONTENT[currentLanguage]}
-      /> */}
+      <Helmet>
+        <meta name="description" content={CONTENT[localeURL]} />
+      </Helmet>
     </div>
   );
 }

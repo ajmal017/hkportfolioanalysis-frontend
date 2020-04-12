@@ -38,5 +38,16 @@ export const TEXT = {
   resetPassword: createObj("Reset Password", "重設密碼"),
   wrongPassword: createObj("Wrong Password", "密碼錯誤"),
   verifyEmail: createObj("Please verify your email", "請確認你的電郵"),
-  sendForgotPassword: createObj("Password reset email has been sent", "已發出電郵重設密碼"),
+  sendForgotPassword: createObj(
+    "Password reset email has been sent",
+    "已發出電郵重設密碼"
+  ),
+  disclaimer: createObj(
+    "Disclaimer: All given numbers in this website are only estimates. We are not responsible for your investment decisions.",
+    "聲明: 這網站只供參考，閣下須為自己的投資負責。"
+  ),
+  portfolioAdvice: createObj(
+    "Please use your portfolio's day close value",
+    "請輸入組合的收市值"
+  ),
 };
