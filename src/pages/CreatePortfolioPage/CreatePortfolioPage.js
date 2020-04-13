@@ -172,3 +172,7 @@ export default function CreatePortfolioPage({ history }) {
     </div>
   );
 }
+
+CreatePortfolioPage.propTypes = {
+  history: PropTypes.object.isRequired,
+};

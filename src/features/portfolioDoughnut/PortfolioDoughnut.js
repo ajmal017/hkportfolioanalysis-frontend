@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import clsx from "clsx";
 
 import { Typography } from "@material-ui/core";
@@ -49,6 +50,11 @@ function sumObjectProperty(items, prop) {
   }, 0);
 }
 
+sumObjectProperty.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  prop: PropTypes.string.isRequired,
+};
+
 function formatDate(date) {
   date = date.toString();
   if (date.length === 8) {
@@ -56,6 +62,10 @@ function formatDate(date) {
   }
   return date;
 }
+
+formatDate.propTypes = {
+  date: PropTypes.number.isRequired,
+};
 
 export default function PortfolioDoughnut({ stocks, portfolioOriginalAmount }) {
   const displayWidth = usePaperWidth();
@@ -92,6 +102,11 @@ export default function PortfolioDoughnut({ stocks, portfolioOriginalAmount }) {
   );
 }
 
+PortfolioDoughnut.propTypes = {
+  stocks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  portfolioOriginalAmount: PropTypes.number.isRequired,
+};
+
 function Header({ lastBusinessDay }) {
   const locale = useLanguage();
 
@@ -108,6 +123,10 @@ function Header({ lastBusinessDay }) {
     </Grid>
   );
 }
+
+Header.propTypes = {
+  lastBusinessDay: PropTypes.number.isRequired,
+};
 
 function PnL({ pnl, pnlPerc }) {
   const classes = useStyles();
@@ -129,15 +148,20 @@ function PnL({ pnl, pnlPerc }) {
   );
 }
 
+PnL.propTypes = {
+  pnl: PropTypes.number.isRequired,
+  pnlPerc: PropTypes.number.isRequired,
+};
+
 function PortfolioPieChart({ portfolioCurrentAmount, stocks, noOfStocks }) {
   const classes = useStyles();
   const locale = useLanguage();
 
   let fontSize = 23;
   if (portfolioCurrentAmount >= 100000000) {
-    fontSize = 19
-  } else if (portfolioCurrentAmount >= 10000000){
-    fontSize = 21
+    fontSize = 19;
+  } else if (portfolioCurrentAmount >= 10000000) {
+    fontSize = 21;
   }
   return (
     <PieChart width={200} height={200} margin={{ left: -15 }}>
@@ -184,6 +208,12 @@ function PortfolioPieChart({ portfolioCurrentAmount, stocks, noOfStocks }) {
   );
 }
 
+PnL.propTypes = {
+  PortfolioPieChart: PropTypes.number,
+  stocks: PropTypes.arrayOf(PropTypes.object),
+  noOfStocks: PropTypes.number,
+};
+
 function tooltipContent(tooltipProps, portfolioCurrentAmount, locale) {
   const popUpObjList = tooltipProps.payload;
   if (popUpObjList.length > 0) {
@@ -207,3 +237,9 @@ function tooltipContent(tooltipProps, portfolioCurrentAmount, locale) {
     return null;
   }
 }
+
+tooltipContent.propTypes = {
+  tooltipProps: PropTypes.object.isRequired,
+  portfolioCurrentAmount: PropTypes.number.isRequired,
+  locale: PropTypes.string.isRequired,
+};

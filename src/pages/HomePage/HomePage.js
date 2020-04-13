@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { useSelector, useDispatch } from "react-redux";
 import { Helmet } from "react-helmet";
@@ -36,7 +37,7 @@ function sum(items) {
   }, 0);
 }
 
-function HomePage({ history }) {
+export default function HomePage({ history }) {
   const dispatch = useDispatch();
   const isFirebaseLoaded = useSelector(
     (state) => state.firebase.profile.isLoaded
@@ -136,4 +137,6 @@ function HomePage({ history }) {
   );
 }
 
-export default HomePage;
+HomePage.propTypes = {
+  history: PropTypes.object.isRequired,
+};

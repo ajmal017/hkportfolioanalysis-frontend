@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 import { useFirebase } from "react-redux-firebase";
 
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ForgotPasswordPage({ history }) {
+export default function ForgotPasswordPage({ history }) {
   const firebase = useFirebase();
   const locale = useLanguage();
   const [email, setEmail] = useState("");
@@ -105,4 +106,6 @@ function ForgotPasswordPage({ history }) {
   );
 }
 
-export default ForgotPasswordPage;
+ForgotPasswordPage.propTypes = {
+  history: PropTypes.object.isRequired,
+};

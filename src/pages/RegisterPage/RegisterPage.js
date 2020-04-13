@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const errorInitState = "";
 
-function RegisterPage({ history }) {
+export default function RegisterPage({ history }) {
   const locale = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -145,4 +145,8 @@ function RegisterPage({ history }) {
   );
 }
 
-export default RegisterPage;
+RegisterPage.propTypes = {
+  history: PropTypes.object.isRequired,
+};
+
+

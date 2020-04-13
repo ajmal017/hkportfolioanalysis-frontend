@@ -36,54 +36,9 @@ export function useWindow() {
 }
 
 export function usePaperWidth() {
-  const { width, height } = useWindow();
+  const { width } = useWindow();
   const paperWidth = Math.min(width * 0.85, 400);
   return paperWidth;
-}
-
-export function useSelectedProducts(productIds, fetchProduct, productId_) {
-  // productId_ is for rerender
-  // since arrays cannot be used for rerendering
-
-  const products = useSelector(state => state.product.products);
-  const productsAlreadyLoaded = new Set(Object.keys(products));
-  const isLoaded = useSelector(state => state.firebase.profile.isLoaded);
-
-  const [selectedProducts, setSelectedProducts] = useState([]);
-
-  useEffect(() => {
-    let productsArray = [];
-    productIds.forEach(productId => {
-      productsArray.push(productId);
-      if (!productsAlreadyLoaded.has(productId)) {
-        // is there a way to dispatch here?
-        fetchProduct(productId);
-      }
-    });
-    setSelectedProducts(productsArray);
-  }, [isLoaded, productId_]);
-
-  let productsToShow = {};
-  selectedProducts.forEach(id => {
-    productsToShow[id] = products[id];
-  });
-
-  return productsToShow;
-}
-
-export function useAllProducts(fetchProducts) {
-  const products = useSelector(state => state.product.products);
-  useEffect(() => {
-    async function fetchData() {
-      fetchProducts();
-    }
-    // a user probably shouldnt have 300 products loaded?
-    const notFullyLoaded = Object.keys(products).length < 300;
-    if (notFullyLoaded) {
-      fetchData();
-    }
-  }, []);
-  return products;
 }
 
 export function useLoggedIn() {

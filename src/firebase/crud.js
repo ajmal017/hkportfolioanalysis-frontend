@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 import * as constants from "./constants";
 import { config } from "./firebase";
 import {
@@ -16,6 +18,11 @@ async function fetchFirebase(firebase, endPoint) {
   return result;
 }
 
+fetchFirebase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  endPoint: PropTypes.string.isRequired,
+};
+
 async function updateObject(firebase, path, obj) {
   const ref = firebase.ref(path);
   try {
@@ -27,6 +34,12 @@ async function updateObject(firebase, path, obj) {
   }
 }
 
+fetchFirebase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  path: PropTypes.string.isRequired,
+  obj: PropTypes.object.isRequired,
+};
+
 export async function fetchLastBusinessDate(firebase) {
   const dbLastBusinessDate = await fetchFirebase(
     firebase,
@@ -35,6 +48,10 @@ export async function fetchLastBusinessDate(firebase) {
   return dbLastBusinessDate;
 }
 
+fetchLastBusinessDate.propTypes = {
+  firebase: PropTypes.object.isRequired,
+};
+
 export async function registerUser(firebase, email, password) {
   const authUser = await firebase
     .auth()
@@ -42,9 +59,20 @@ export async function registerUser(firebase, email, password) {
   return authUser;
 }
 
+registerUser.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  email: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+};
+
 export async function sendPasswordResetEmail(firebase, email) {
   await firebase.auth().sendPasswordResetEmail(email);
 }
+
+sendPasswordResetEmail.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  email: PropTypes.string.isRequired,
+};
 
 export async function sendVerification(firebase) {
   await firebase.auth().currentUser.sendEmailVerification({
@@ -52,10 +80,18 @@ export async function sendVerification(firebase) {
   });
 }
 
+sendVerification.propTypes = {
+  firebase: PropTypes.object.isRequired,
+};
+
 export async function logout(firebase) {
   await firebase.auth().signOut();
   clearBackendResponse();
 }
+
+logout.propTypes = {
+  firebase: PropTypes.object.isRequired,
+};
 
 export async function createPortfolio(firebase, userId, stockObj) {
   const buyDate = await fetchLastBusinessDate(firebase);
@@ -68,11 +104,23 @@ export async function createPortfolio(firebase, userId, stockObj) {
   }
 }
 
+createPortfolio.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  userId: PropTypes.string.isRequired,
+  stockObj: PropTypes.object.isRequired,
+};
+
 export async function fetchStockName(firebase, stockCode, language) {
   const path = `${constants.END_POINT_STOCKS}/${stockCode}/name/${language}`;
   const stockName = await fetchFirebase(firebase, path);
   return stockName;
 }
+
+createPortfolio.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  stockCode: PropTypes.string.isRequired,
+  language: PropTypes.string.isRequired,
+};
 
 export async function fetchStockCodes() {
   // firebase web does not have shallow

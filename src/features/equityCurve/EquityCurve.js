@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
@@ -12,6 +13,8 @@ import PortfolioPerformanceStats from "./PortfolioPerformanceStats";
 import { TOOLTIP_STYLE } from "../../utils/styles";
 import { TEXT } from "../../translation";
 
+const STROKE_COLOR = "#678DDA";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -23,6 +26,10 @@ function toPercentage(number) {
   return (number * 100).toFixed(2);
 }
 
+toPercentage.propTypes = {
+  number: PropTypes.number.isRequired,
+};
+
 function formatData(obj) {
   return {
     HSI: toPercentage(obj["^HSI"]),
@@ -30,6 +37,10 @@ function formatData(obj) {
     date: obj["date"],
   };
 }
+
+formatData.propTypes = {
+  obj: PropTypes.object.isRequired,
+};
 
 function minOfArrayObj(arrayObject) {
   let min_ = Infinity;
@@ -39,6 +50,10 @@ function minOfArrayObj(arrayObject) {
   return min_;
 }
 
+minOfArrayObj.propTypes = {
+  arrayObject: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
 function maxOfArrayObj(arrayObject) {
   let max_ = -Infinity;
   arrayObject.forEach((obj) => {
@@ -46,6 +61,10 @@ function maxOfArrayObj(arrayObject) {
   });
   return max_;
 }
+
+maxOfArrayObj.propTypes = {
+  arrayObject: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 
 function calculateMaxDrawdown(array) {
   if (array.length <= 1) {
@@ -60,7 +79,9 @@ function calculateMaxDrawdown(array) {
   return maxDD;
 }
 
-const STROKE_COLOR = "#678DDA";
+calculateMaxDrawdown.propTypes = {
+  array: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
 
 export default function EquityCurve({ equityCurveObjArray }) {
   const locale = useLanguage();
@@ -123,6 +144,10 @@ export default function EquityCurve({ equityCurveObjArray }) {
   );
 }
 
+EquityCurve.propTypes = {
+  equityCurveObjArray: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
 function tooltipContent(tooltipProps, locale) {
   const popUpObjList = tooltipProps.payload;
   if (popUpObjList.length > 0) {
@@ -142,3 +167,8 @@ function tooltipContent(tooltipProps, locale) {
     return null;
   }
 }
+
+tooltipContent.propTypes = {
+  tooltipProps: PropTypes.object.isRequired,
+  locale: PropTypes.string.isRequired,
+};

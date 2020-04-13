@@ -63,3 +63,8 @@ export default function InvestmentCards({ stocks, currentPortfolio }) {
     </Paper>
   );
 }
+
+InvestmentCards.propTypes = {
+  stocks: PropTypes.object.isRequired,
+  currentPortfolio: PropTypes.object.isRequired,
+};

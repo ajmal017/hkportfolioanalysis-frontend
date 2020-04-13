@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -62,3 +63,10 @@ export default function CorrelationMatrix({ data }) {
     </Paper>
   );
 }
+CorrelationMatrix.propTypes = {
+  data: PropTypes.array.isRequired,
+};
+
+createColumnDef.propTypes = {
+  headerName: PropTypes.string.isRequired,
+};

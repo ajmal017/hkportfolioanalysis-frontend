@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -30,3 +31,9 @@ export default function NotificationPopUp({ active, setState, text }) {
     />
   );
 }
+
+NotificationPopUp.propTypes = {
+  active: PropTypes.bool.isRequired,
+  setState: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+};
