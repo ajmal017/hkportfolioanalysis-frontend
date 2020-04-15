@@ -75,7 +75,7 @@ export function useBackendData() {
 
     const cachedData = localStorage.getBackendResponse();
     const lastFetchDate = localStorage.getLastFetchDate();
-    const hasUpdates = lastFetchDate && lastBusinessDate <= lastFetchDate;
+    const hasUpdates = lastFetchDate && lastBusinessDate < lastFetchDate;
     if (cachedData && !hasUpdates) {
       console.log(
         `Getting backend response from local storage. Last fetch time: ${lastFetchDate}`
